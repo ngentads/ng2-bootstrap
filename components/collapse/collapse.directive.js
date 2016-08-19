@@ -1,0 +1,176 @@
+"use strict";
+// FIX: in order to update to rc.1 had to disable animation, sorry
+var core_1 = require('@angular/core');
+// import {AnimationBuilder} from '@angular/platform-browser/src/animate/animation_builder';
+// import {animate, animation, state, style, transition} from '@angular/core';
+/*@Directive({
+ selector: '[collapse]',
+ // templateUrl: 'app/panel.html',
+ // styleUrls: ['app/panel.css'],
+ animations: [
+ animation('active', [
+ state('void', style({ height: 0 })),
+ state('closed', style({ height: 0 })),
+ state('open', style({ height: '*' })),
+ transition('void => closed', [ animate(0) ]),
+ transition('closed => open', [ animate('350ms ease-out') ]),
+ transition('open => closed', [ animate('350ms ease-out') ])
+ ])
+ ]
+ })*/
+// fix: replace with // '@angular/animate';
+// when https://github.com/angular/angular/issues/5984 will be fixed
+// TODO: remove ElementRef
+// TODO: add on change
+// TODO: #576 add callbacks: expanding, collapsing after adding animation
+var CollapseDirective = (function () {
+    function CollapseDirective(/*_ab:AnimationBuilder, */ _el, _renderer) {
+        // private animation:any;
+        this.collapsed = new core_1.EventEmitter(false);
+        this.expanded = new core_1.EventEmitter(false);
+        // shown
+        this.isExpanded = true;
+        // hidden
+        this.isCollapsed = false;
+        // stale state
+        this.isCollapse = true;
+        // animation state
+        this.isCollapsing = false;
+        // this._ab = _ab;
+        this._el = _el;
+        this._renderer = _renderer;
+    }
+    Object.defineProperty(CollapseDirective.prototype, "collapse", {
+        get: function () {
+            return this.isExpanded;
+        },
+        // @Input() private transitionDuration:number = 500; // Duration in ms
+        set: function (value) {
+            this.isExpanded = value;
+            this.toggle();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CollapseDirective.prototype.ngOnInit = function () {
+        // this.animation = this._ab.css();
+        // this.animation.setDuration(this.transitionDuration);
+    };
+    CollapseDirective.prototype.toggle = function () {
+        // this.open = !this.open;
+        if (this.isExpanded) {
+            this.hide();
+        }
+        else {
+            this.show();
+        }
+    };
+    CollapseDirective.prototype.hide = function () {
+        this.isCollapse = false;
+        this.isCollapsing = true;
+        this.isExpanded = false;
+        this.isCollapsed = true;
+        this.isCollapse = true;
+        this.isCollapsing = false;
+        this.display = 'none';
+        this.collapsed.emit(event);
+        /*  setTimeout(() => {
+         // this.height = '0';
+         // this.isCollapse = true;
+         // this.isCollapsing = false;
+         this.animation
+         .setFromStyles({
+         height: this._el.nativeElement.scrollHeight + 'px'
+         })
+         .setToStyles({
+         height: '0',
+         overflow: 'hidden'
+         });
+    
+         this.animation.start(this._el.nativeElement)
+         .onComplete(() => {
+         if (this._el.nativeElement.offsetHeight === 0) {
+         this.display = 'none';
+         }
+    
+         this.isCollapse = true;
+         this.isCollapsing = false;
+         });
+         }, 4);*/
+    };
+    CollapseDirective.prototype.show = function () {
+        this.isCollapse = false;
+        this.isCollapsing = true;
+        this.isExpanded = true;
+        this.isCollapsed = false;
+        this.display = 'block';
+        // this.height = 'auto';
+        this.isCollapse = true;
+        this.isCollapsing = false;
+        this._renderer.setElementStyle(this._el.nativeElement, 'overflow', 'visible');
+        this._renderer.setElementStyle(this._el.nativeElement, 'height', 'auto');
+        this.expanded.emit(event);
+        /*setTimeout(() => {
+         // this.height = 'auto';
+         // this.isCollapse = true;
+         // this.isCollapsing = false;
+         this.animation
+         .setFromStyles({
+         height: this._el.nativeElement.offsetHeight,
+         overflow: 'hidden'
+         })
+         .setToStyles({
+         height: this._el.nativeElement.scrollHeight + 'px'
+         });
+    
+         this.animation.start(this._el.nativeElement)
+         .onComplete(() => {
+         this.isCollapse = true;
+         this.isCollapsing = false;
+         this._renderer.setElementStyle(this._el.nativeElement, 'overflow', 'visible');
+         this._renderer.setElementStyle(this._el.nativeElement, 'height', 'auto');
+         });
+         }, 4);*/
+    };
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', core_1.EventEmitter)
+    ], CollapseDirective.prototype, "collapsed", void 0);
+    __decorate([
+        core_1.Output(), 
+        __metadata('design:type', core_1.EventEmitter)
+    ], CollapseDirective.prototype, "expanded", void 0);
+    __decorate([
+        core_1.HostBinding('style.display'), 
+        __metadata('design:type', String)
+    ], CollapseDirective.prototype, "display", void 0);
+    __decorate([
+        core_1.HostBinding('class.in'),
+        core_1.HostBinding('attr.aria-expanded'), 
+        __metadata('design:type', Boolean)
+    ], CollapseDirective.prototype, "isExpanded", void 0);
+    __decorate([
+        core_1.HostBinding('attr.aria-hidden'), 
+        __metadata('design:type', Boolean)
+    ], CollapseDirective.prototype, "isCollapsed", void 0);
+    __decorate([
+        core_1.HostBinding('class.collapse'), 
+        __metadata('design:type', Boolean)
+    ], CollapseDirective.prototype, "isCollapse", void 0);
+    __decorate([
+        core_1.HostBinding('class.collapsing'), 
+        __metadata('design:type', Boolean)
+    ], CollapseDirective.prototype, "isCollapsing", void 0);
+    __decorate([
+        core_1.Input(), 
+        __metadata('design:type', Boolean), 
+        __metadata('design:paramtypes', [Boolean])
+    ], CollapseDirective.prototype, "collapse", null);
+    CollapseDirective = __decorate([
+        core_1.Directive({ selector: '[collapse]' }), 
+        __metadata('design:paramtypes', [core_1.ElementRef, core_1.Renderer])
+    ], CollapseDirective);
+    return CollapseDirective;
+}());
+exports.CollapseDirective = CollapseDirective;
+//# sourceMappingURL=collapse.directive.js.map
